@@ -3,9 +3,9 @@
 ## Quick start
 Click on the releases and download the zip archive.
 
-(You will need to extract the zip archive, the .exe file will not run otherwise)
-
 Or just click [this.](https://github.com/NZAYc/PDX-Mod-Installer/releases/tag/release)
+
+(You will need to extract the zip archive, the .exe file will not run otherwise)
 
 ## Running from code
 - Clone the repository
