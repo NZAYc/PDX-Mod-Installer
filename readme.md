@@ -7,8 +7,6 @@ Or just click [this.](https://github.com/NZAYc/PDX-Mod-Installer/releases/tag/re
 
 (You will need to extract the zip archive, the .exe file will not run otherwise)
 
-**IMPORTANT NOTICE: The mod archive you download NEEDS to contain both a mod folder and a .mod file for this application to work (will maybe fix this issue in the future)**
-
 ## Running from code
 - Clone the repository
 - Type `pip install -r requirements.txt`
