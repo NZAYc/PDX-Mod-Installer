@@ -1,4 +1,5 @@
 import os
+import re
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
@@ -119,13 +120,17 @@ class ModInstaller(tk.Frame):
                         extract_dir) if f.endswith('.mod')]
                     for mod_file in mod_files:
                         mod_file_path = os.path.join(extract_dir, mod_file)
-                        with open(mod_file_path, "r") as mod_file:
-                            mod_file_contents = mod_file.read()
+                        with open(mod_file_path, "r") as mod_file_handle:
+                            mod_file_contents = mod_file_handle.read()
                         if "path=" not in mod_file_contents:
                             # If path line is missing, add a new one with appropriate path
                             mod_file_contents += f"\npath=\"{extract_dir}/{zip_folder}\""
-                            with open(mod_file_path, "w") as mod_file:
-                                mod_file.write(mod_file_contents)
+                        else:
+                            # Otherwise, replace existing path line with appropriate path
+                            mod_file_contents = re.sub(
+                                r"path\s*=.*", f"path=\"{extract_dir}/{zip_folder}\"", mod_file_contents)
+                        with open(mod_file_path, "w") as mod_file_handle:
+                            mod_file_handle.write(mod_file_contents)
 
                 print(f"{file_path} extracted successfully!")
                 self.status_label.config(text="Installation complete!")
