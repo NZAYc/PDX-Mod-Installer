@@ -116,21 +116,21 @@ class ModInstaller(tk.Frame):
                     zip_file.extractall(extract_dir)
 
                     # Modifying mod file path
-                    mod_files = [f for f in os.listdir(
-                        extract_dir) if f.endswith('.mod')]
+                    mod_files = [f for f in zip_file.namelist()
+                                 if f.endswith('.mod')]
                     for mod_file in mod_files:
-                        mod_file_path = os.path.join(extract_dir, mod_file)
-                        with open(mod_file_path, "r") as mod_file_handle:
-                            mod_file_contents = mod_file_handle.read()
+                        mod_file_contents = zip_file.read(mod_file).decode()
                         if "path=" not in mod_file_contents:
                             # If path line is missing, add a new one with appropriate path
                             mod_file_contents += f"\npath=\"{extract_dir}/{zip_folder}\""
-                        else:
-                            # Otherwise, replace existing path line with appropriate path
+                            with open(os.path.join(extract_dir, mod_file), "w") as mod_file:
+                                mod_file.write(mod_file_contents)
+                        elif f"path=\"{extract_dir}/{zip_folder}\"" not in mod_file_contents:
+                            # If path line already exists but has different path, update it
                             mod_file_contents = re.sub(
-                                r"path\s*=.*", f"path=\"{extract_dir}/{zip_folder}\"", mod_file_contents)
-                        with open(mod_file_path, "w") as mod_file_handle:
-                            mod_file_handle.write(mod_file_contents)
+                                r"path=\".*\"", f"path=\"{extract_dir}/{zip_folder}\"", mod_file_contents)
+                            with open(os.path.join(extract_dir, mod_file), "w") as mod_file:
+                                mod_file.write(mod_file_contents)
 
                 print(f"{file_path} extracted successfully!")
                 self.status_label.config(text="Installation complete!")
