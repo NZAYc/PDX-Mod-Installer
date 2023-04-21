@@ -1,9 +1,9 @@
 import os
 import re
+import zipfile
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
-from zipfile import ZipFile
 
 
 class ModInstaller(tk.Frame):
@@ -109,7 +109,7 @@ class ModInstaller(tk.Frame):
             try:
                 print(f"Extracting {file_path}...")
                 # Opening zip file
-                with ZipFile(file_path, "r") as zip_file:
+                with zipfile.ZipFile(file_path, "r") as zip_file:
                     # Extracting contents to directory
                     zip_folder = zip_file.namelist()[0]
                     extract_dir = directory
