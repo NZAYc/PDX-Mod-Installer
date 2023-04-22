@@ -1,4 +1,5 @@
 import os
+import sys
 import re
 import shutil
 import requests
@@ -159,6 +160,14 @@ class ModInstaller(tk.Frame):
         self.extract_button.config(state="normal")
 
     def check_for_updates(current_version):
+        # setting the path for version.txt file depending on how the script is run
+        try:
+            # for bundled executable created by PyInstaller
+            os.chdir(sys._MEIPASS)
+        except AttributeError:
+            # for regular Python script
+            pass
+
         # Getting the current version number from the version.txt file in the repository
         with open('version.txt', 'r') as f:
             current_version = f.read()
