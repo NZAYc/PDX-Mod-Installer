@@ -1,9 +1,12 @@
 import os
 import re
+import shutil
+import requests
 import zipfile
 import tkinter as tk
-from tkinter import filedialog
 from tkinter import ttk
+from tkinter import messagebox
+from tkinter import filedialog
 
 
 class ModInstaller(tk.Frame):
@@ -36,19 +39,10 @@ class ModInstaller(tk.Frame):
         self.selected_archive_label = ttk.Label(self, text="")
         self.selected_archive_label.pack(side="top")
 
-        # Creating clear button
-        self.clear_button = ttk.Button(
-            self, text="Clear List", command=self.clear_files)
-        self.clear_button.pack(side="bottom", padx=10, pady=10)
-
         # Creating extract button
         self.extract_button = ttk.Button(
             self, text="Extract and Install", command=self.extract_files)
         self.extract_button.pack(side="top", padx=10, pady=10)
-
-        # Creating progress bar
-        self.status_label = ttk.Label(self, text="Waiting for user input...")
-        self.status_label.pack(side="bottom", fill="x", padx=10, pady=10)
 
         # Initializing drop box frame
         self.drop_box_frame = ttk.Frame(self)
@@ -56,15 +50,35 @@ class ModInstaller(tk.Frame):
                                  expand=True, padx=10, pady=10)
 
         # Initializing drop box
-        self.drop_box = ttk.Treeview(
-            self.drop_box_frame, height=5)
+        self.drop_box = ttk.Treeview(self.drop_box_frame, height=7)
         self.drop_box.pack(side="left", fill="both", expand=True)
+        self.drop_box.column("#0", width=450)
 
         # Add scrollbar to drop box frame
         self.drop_box_scrollbar = ttk.Scrollbar(
             self.drop_box_frame, orient="vertical", command=self.drop_box.yview)
         self.drop_box_scrollbar.pack(side="right", fill="y")
         self.drop_box.configure(yscrollcommand=self.drop_box_scrollbar.set)
+
+        # Creating status label
+        self.status_label = ttk.Label(self, text="Waiting for user input...")
+        self.status_label.pack(
+            side="top", fill="x", padx=10, pady=10)
+
+        # Creating clear and check updates button frame
+        self.clear_update_frame = ttk.Frame(self)
+        self.clear_update_frame.pack(
+            side="top", fill="x", padx=10, pady=10)
+
+        # Creating clear button
+        self.clear_button = ttk.Button(
+            self.clear_update_frame, text="Clear List", command=self.clear_files)
+        self.clear_button.pack(side="right", padx=20)
+
+        # Creating check for updates button
+        self.check_updates_button = ttk.Button(
+            self.clear_update_frame, text="Check for Updates", command=self.check_for_updates)
+        self.check_updates_button.pack(side="right", padx=5)
 
     def browse_directory(self):
         self.directory = filedialog.askdirectory()
@@ -143,6 +157,43 @@ class ModInstaller(tk.Frame):
 
         # Re-enable extract button
         self.extract_button.config(state="normal")
+
+    def check_for_updates(current_version):
+        # Getting the current version number from the version.txt file in the repository
+        with open('version.txt', 'r') as f:
+            current_version = f.read()
+
+        # Getting the latest version number from the version.txt file in the repository
+        response = requests.get(
+            "https://raw.githubusercontent.com/NZAYc/PDX-Mod-Installer/main/version.txt")
+        latest_version = response.text.strip()
+
+        # Comparing the latest version number to the current version
+        if latest_version > current_version:
+            # Prompting the user to update to the latest version
+            update = messagebox.askyesno(
+                "Update Available", f"A new version ({latest_version}) is available. Do you want to update?")
+            if update:
+
+                # Downloading the latest release zip file
+                download_url = f"https://github.com/NZAYc/PDX-Mod-Installer/releases/download/release/pdx.mod.installer.zip"
+                response = requests.get(download_url, stream=True)
+                with open("update.zip", "wb") as update_file:
+                    shutil.copyfileobj(response.raw, update_file)
+
+                # Extracting the contents of the zip file
+                with zipfile.ZipFile("update.zip", "r") as zip_ref:
+                    zip_ref.extractall(".")
+
+                # Removing the update.zip file
+                os.remove("update.zip")
+
+                # Prompting the user to uninstall the old version manually
+                messagebox.showinfo(
+                    "Update Complete", f"The program has been updated to version {latest_version}. Please uninstall the old version manually.")
+        else:
+            messagebox.showinfo(
+                "No Updates", f"You are already running the latest version ({current_version}).")
 
 
 if __name__ == "__main__":
