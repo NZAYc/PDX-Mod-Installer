@@ -22,4 +22,8 @@ This is a simple mod installer for Paradox Interactive games, built using Python
 
 Feel free to fork this repository and submit pull requests for any changes or improvements you would like to make. If you have any issues or suggestions, please submit them through the Issues tab on GitHub.
 
+## Log (06.05.2023)
+
+This is basically a finished product at this point so I don't think I will be updating it further unless something comes up.
+
 
